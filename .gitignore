@@ -1,0 +1,10 @@
+# bruit ambiant
+**/.DS_Store
+**/*.exe
+**/*.o
+
+# exécutable généré par mon_script.sh:
+bin/Debug/mon_appli
+
+# fichiers backup:
+**/*~
