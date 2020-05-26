@@ -8,3 +8,6 @@ bin/Debug/mon_appli
 
 # fichiers backup:
 **/*~
+
+# VSCode
+**/.vscode
