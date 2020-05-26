@@ -10,6 +10,7 @@ void Board::setup(){
   pinMode(0,OUTPUT);
   pinMode(2,INPT);
   pinMode(3,OUTPUT);
+  pinMode(4,INPT);
 }
 
 // la boucle de controle arduino
@@ -34,7 +35,7 @@ void Board::loop(){
     sprintf(buf,"luminosite %d",val);
     Serial.println(buf);
     if(cpt%5==0){
-        // tous les 5 fois on affiche sur l ecran la temperature
+        // tous les 5 fois on affiche sur l ecran la luminosité
       sprintf(buf,"%d",val);
       bus.write(1,buf,100);
     }
@@ -45,13 +46,19 @@ void Board::loop(){
 // on eteint et on allume les LED
   if(bascule){
     digitalWrite(0,HIGH);
-    digitalWrite(3,HIGH);
   }else{
     digitalWrite(0,LOW);
-    digitalWrite(3,LOW);
   }
   bascule=1-bascule;
   
+  val=analogRead(4);
+  sprintf(buf,"bouton %d",val);
+  Serial.println(buf);
+  if(val){
+    digitalWrite(3,HIGH);
+  }else{
+    digitalWrite(3,LOW);
+  }
 }
 
 

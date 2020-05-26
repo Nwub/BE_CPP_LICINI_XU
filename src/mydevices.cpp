@@ -4,9 +4,11 @@
 using namespace std;
 
 int luminosite_environnement = 200;
+int temperature_environnement = 25;
 
 //classe AnalogSensorTemperature
-AnalogSensorTemperature::AnalogSensorTemperature(int d,int  t):Device(),val(t),temps(d){
+AnalogSensorTemperature::AnalogSensorTemperature(int d):Device(),temps(d){
+  val=temperature_environnement;
   alea=1;
 }
 
@@ -83,6 +85,24 @@ void IntelligentDigitalActuatorLED::run(){
       luminosite_environnement = luminosite_environnement - 50;
       old_state=state;
     }
+    sleep(temps);
   }
 }
 
+
+ExternalDigitalSensorButton::ExternalDigitalSensorButton():Device(){
+  state = LOW;
+}
+
+void ExternalDigitalSensorButton::run(){
+  while(1){
+    if(ifstream("on.txt")){
+      state = HIGH;
+    }else{
+      state = LOW;
+    }
+    if(ptrmem!=NULL)
+    *ptrmem=state;
+    sleep(5);
+  }
+}
