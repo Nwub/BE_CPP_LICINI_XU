@@ -7,7 +7,6 @@
 #include <string.h>
 #include "core_simulation.h"
 
-
 // exemple de capteur analogique de temperature, ne pas oublier d'heriter de Device
 class AnalogSensorTemperature: public Device {
 private:
@@ -50,6 +49,40 @@ public:
   // constructeur
   I2CActuatorScreen ();
   // thread representant le capteur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//capteur de luminosité
+class AnalogSensorLuminosity : public Device{
+private:
+  // fait osciller la valeur du capteur de 1
+  int alea;
+  // valeur de luminosité mesurée
+  int val;
+  // temps entre 2 prises de valeurs
+  int temps;
+  
+public:
+  //constructeur ne pas oublier d'initialiser la classe mere
+  AnalogSensorLuminosity(int d);
+  // thread representant le capteur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+
+class IntelligentDigitalActuatorLED : public Device{
+  private:
+  //état de la led
+  int state;
+  //1/fe
+  int temps;
+
+  public:
+  //constructeur
+  IntelligentDigitalActuatorLED(int t);
+  //thread
   virtual void run();
 };
 
