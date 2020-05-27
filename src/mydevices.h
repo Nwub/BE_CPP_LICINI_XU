@@ -8,94 +8,106 @@
 #include "core_simulation.h"
 #include <fstream>
 
-// exemple de capteur analogique de temperature, ne pas oublier d'heriter de Device
-class AnalogSensorTemperature: public Device {
-private:
-  // fait osciller la valeur du cpateur de 1
-  int alea;
-  // valeur de temperature mesuree
-  int val;
-  // temps entre 2 prises de valeurs
-  int temps;
-  
-public:
-  //constructeur ne pas oublier d'initialiser la classe mere
-  AnalogSensorTemperature(int d);
-  // thread representant le capteur et permettant de fonctionner independamment de la board
-  virtual void run();
-};
-
-// exemple d'actionneur digital : une led, ne pas oublier d'heriter de Device
-class DigitalActuatorLED: public Device {
-private:
-  // etat de la LED
-  int state;
-  // temps entre 2 affichage de l etat de la led
-  int temps;
-  
-public:
-    // initialisation du temps de rafraichiisement
-  DigitalActuatorLED(int t);
-  // thread representant l'actionneur et permettant de fonctionner independamment de la board
-  virtual void run();
-};
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~
 // exemple d'actionneur sur le bus I2C permettant d'echanger des tableaux de caracteres : un ecran, ne pas oublier d'heriter de Device
 class I2CActuatorScreen : public Device{
 protected:
     // memorise l'affichage de l'ecran
   char buf[I2C_BUFFER_SIZE];
-  
+
 public:
   // constructeur
   I2CActuatorScreen ();
   // thread representant le capteur et permettant de fonctionner independamment de la board
   virtual void run();
 };
+//~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-//capteur de luminosité
-class AnalogSensorLuminosity : public Device{
-private:
-  // fait osciller la valeur du capteur de 1
+//objet type : capteur de base
+class Sensor: public Device{
+  protected:
+  //incertitudes
   int alea;
-  // valeur de luminosité mesurée
-  int val;
-  // temps entre 2 prises de valeurs
-  int temps;
-  
-public:
-  //constructeur ne pas oublier d'initialiser la classe mere
-  AnalogSensorLuminosity(int d);
-  // thread representant le capteur et permettant de fonctionner independamment de la board
-  virtual void run();
-};
-
-
-class IntelligentDigitalActuatorLED : public Device{
-  private:
-  //état de la led
-  int state;
-  //1/fe
+  //période d'échantillonnage
   int temps;
 
   public:
   //constructeur
-  IntelligentDigitalActuatorLED(int t);
+  Sensor(int d);
   //thread
   virtual void run();
 };
 
-
-class ExternalDigitalSensorButton : public Device{
-  private:
-  //état du bouton
+//objet type : actionneur de base
+class Actuator: public Device{
+  protected:
+  //état
   int state;
 
   public:
   //constructeur
-  ExternalDigitalSensorButton();
+  Actuator();
+  //thread
+  virtual void run();
+};
+
+//capteur analogique de temperature
+class AnalogSensorTemperature: public Sensor {  
+private:
+  //valeur mesurée
+  int val;
+public:
+  //constructeur
+  AnalogSensorTemperature(int t);
+  // thread representant le capteur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+//actionneur digital : une led
+class DigitalActuatorLED: public Actuator {
+private:
+  //état LED
+  boolean state;
+public:
+  //constructeur
+  DigitalActuatorLED();
+  // thread representant l'actionneur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+//capteur de luminosité
+class AnalogSensorLuminosity : public Sensor{
+  private:
+  //valeur mesurée
+  int val;
+
+  public:
+  //constructeur
+  AnalogSensorLuminosity(int t);
+  // thread representant le capteur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+//smart-LED
+class IntelligentDigitalActuatorLED : public Actuator{
+  private:
+  //état LED
+  boolean state;
+  public:
+  //constructeur
+  IntelligentDigitalActuatorLED();
+  //thread
+  virtual void run();
+};
+
+//bouton externe
+class ExternalDigitalSensorButton : public Sensor{
+  private:
+  //état bouton
+  boolean state;
+  public:
+  //constructeur
+  ExternalDigitalSensorButton(int t);
   //thread
   virtual void run();
 };

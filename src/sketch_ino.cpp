@@ -39,26 +39,26 @@ void Board::loop(){
       sprintf(buf,"%d",val);
       bus.write(1,buf,100);
     }
+    
+    val=digitalRead(4);
+    sprintf(buf,"bouton %d",val);
+    Serial.println(buf);
+    if(val){
+      digitalWrite(3,HIGH);
+    }else{
+      digitalWrite(3,LOW);
+    }
 
     cpt++;
     sleep(1);
   }
-// on eteint et on allume les LED
+// on eteint et on allume la LED
   if(bascule){
     digitalWrite(0,HIGH);
   }else{
     digitalWrite(0,LOW);
   }
   bascule=1-bascule;
-  
-  val=digitalRead(4);
-  sprintf(buf,"bouton %d",val);
-  Serial.println(buf);
-  if(val){
-    digitalWrite(3,HIGH);
-  }else{
-    digitalWrite(3,LOW);
-  }
 }
 
 

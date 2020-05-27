@@ -6,11 +6,11 @@ int main(){
   Board esp8266;
   // achat des senseurs et actionneurs
   AnalogSensorTemperature temperature(DELAY);
-  DigitalActuatorLED led1(DELAY);
+  DigitalActuatorLED led1;
   I2CActuatorScreen screen;
   AnalogSensorLuminosity luminosity(DELAY);
-  IntelligentDigitalActuatorLED led2(DELAY);
-  ExternalDigitalSensorButton button;
+  IntelligentDigitalActuatorLED led2;
+  ExternalDigitalSensorButton button(DELAY);
   
   // branchement des capteurs actionneurs
   esp8266.pin(1,temperature);

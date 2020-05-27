@@ -8,40 +8,10 @@ int temperature_environnement = 25; //°C
 float pression_environnement = 1.013; //bar
 int humidite_environemment = 40; //%
 
-//classe AnalogSensorTemperature
-AnalogSensorTemperature::AnalogSensorTemperature(int d):Device(),temps(d){
-  val=temperature_environnement;
-  alea=1;
-}
-
-void AnalogSensorTemperature::run(){
-  while(1){
-    alea=1-alea;
-    if(ptrmem!=NULL)
-      *ptrmem=val+alea;
-    sleep(temps);
-  }
-}
-
-//classe DigitalActuatorLED
-DigitalActuatorLED::DigitalActuatorLED(int t):Device(),state(LOW),temps(t){
-}
-
-void DigitalActuatorLED::run(){
-  while(1){
-    if(ptrmem!=NULL)
-      state=*ptrmem;
-    if (state==LOW)
-      cout << "((((eteint))))\n";
-    else
-    cout << "((((allume))))\n";
-    sleep(temps);
-    }
-}
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // classe I2CActuatorScreen
 I2CActuatorScreen::I2CActuatorScreen ():Device(){
-  }
+}
 
 void I2CActuatorScreen::run(){
   while(1){
@@ -52,14 +22,63 @@ void I2CActuatorScreen::run(){
     sleep(1);
     }
 }
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-AnalogSensorLuminosity::AnalogSensorLuminosity(int d):Device(),temps(d){
-  val = luminosite_environnement;
+//constructeur des classes Sensor
+Sensor::Sensor(int d):Device(){
+  temps = d;
   alea = 1;
 }
+void Sensor::run(){
+  while(1){
+    cout << "empty sensor" << endl;
+    sleep(DELAY);
+  }
+}
 
+//constructeur des classes Actuator
+Actuator::Actuator():Device(){
+  state = LOW;
+}
+void Actuator::run(){
+  while(1){
+    cout << "empty actuator" << endl;
+    sleep(DELAY);
+  }
+}
+
+//capteur de température ambiant
+AnalogSensorTemperature::AnalogSensorTemperature(int d):Sensor(d){
+  val=temperature_environnement;
+}
+void AnalogSensorTemperature::run(){
+  while(1){
+    alea=1-alea;
+    if(ptrmem!=NULL)
+      *ptrmem=val+alea;
+    sleep(temps);
+  }
+}
+
+//classe LED
+DigitalActuatorLED::DigitalActuatorLED():Actuator(){
+}
+void DigitalActuatorLED::run(){
+  while(1){
+    if(ptrmem!=NULL)
+      state=*ptrmem;
+    if (state==LOW)
+      cout << "((((eteint))))\n";
+    else
+    cout << "((((allume))))\n";
+    sleep(DELAY);
+    }
+}
+
+//capteur de luminosité ambiante
+AnalogSensorLuminosity::AnalogSensorLuminosity(int d):Sensor(d){
+  val = luminosite_environnement;
+}
 void AnalogSensorLuminosity::run(){
   while(1){
     val = luminosite_environnement;
@@ -70,11 +89,9 @@ void AnalogSensorLuminosity::run(){
   }
 }
 
-
-IntelligentDigitalActuatorLED::IntelligentDigitalActuatorLED(int d):Device(),temps(d){
-  state = HIGH;
+//LED
+IntelligentDigitalActuatorLED::IntelligentDigitalActuatorLED():Actuator(){
 }
-
 void IntelligentDigitalActuatorLED::run(){
   int old_state = state;
   while(1){
@@ -83,19 +100,21 @@ void IntelligentDigitalActuatorLED::run(){
     if(state==HIGH && old_state==LOW){
       luminosite_environnement = luminosite_environnement + 50;
       old_state=state;
+      cout << "[ON]" << endl << flush;
     }else if(state== LOW && old_state==HIGH){
       luminosite_environnement = luminosite_environnement - 50;
       old_state=state;
+      cout << "[OFF]" << endl << flush;
+    }else{
+      old_state=state;
     }
-    sleep(temps);
+    sleep(DELAY);
   }
 }
 
-
-ExternalDigitalSensorButton::ExternalDigitalSensorButton():Device(){
-  state = LOW;
+//bouton externe
+ExternalDigitalSensorButton::ExternalDigitalSensorButton(int t):Sensor(t){
 }
-
 void ExternalDigitalSensorButton::run(){
   while(1){
     if(ifstream("on.txt")){
