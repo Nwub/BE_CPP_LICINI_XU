@@ -3,8 +3,10 @@
 
 using namespace std;
 
-int luminosite_environnement = 200;
-int temperature_environnement = 25;
+int luminosite_environnement = 200; //LUX
+int temperature_environnement = 25; //°C
+float pression_environnement = 1.013; //bar
+int humidite_environemment = 40; //%
 
 //classe AnalogSensorTemperature
 AnalogSensorTemperature::AnalogSensorTemperature(int d):Device(),temps(d){

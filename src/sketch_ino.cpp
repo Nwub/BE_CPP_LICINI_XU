@@ -51,7 +51,7 @@ void Board::loop(){
   }
   bascule=1-bascule;
   
-  val=analogRead(4);
+  val=digitalRead(4);
   sprintf(buf,"bouton %d",val);
   Serial.println(buf);
   if(val){
