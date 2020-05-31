@@ -1,22 +1,19 @@
 # BE_Board
 simple simulation of an arduino board
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Unité d'arrosage mobile**
 
 Arrosage automatique en fonction de la température, la luminosité, l'humidité, le mode
 Arrosage manuel possible par action de l'utilisateur
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    .Programme
+__Programme__
 Compilation à l'aide de g++ : "g++ -Wall -Wextra -std=c++11 -pthread board.cpp core_simulation.cpp mydevices.cpp sketch_ino.cpp -o arduino"
 → Run du système avec le fichier arduino : ./arduino
 
-    .Simulation
+__Simulation__
 Changement manuellement des variables globales dans board.cpp pour modifier les conditions initiales de l'environnement
 
-    .Intéraction
+__Intéraction__
 Commande externe par l'utilisateur : glisser un fichier dans le répertoire src avec pour nom l'un des suivant
 `système d'arrosage`
 → "on.txt" : activation manuel
@@ -28,4 +25,4 @@ Commande externe par l'utilisateur : glisser un fichier dans le répertoire src 
 → "power.txt" : rechargement de la batterie
 → "water.txt" : rechargement de l'eau
 
-N.B. : augmentation de 3 devices supplémentaire par rapport à la version de base
+_N.B. : augmentation de 3 devices supplémentaire par rapport à la version de base_
