@@ -10,6 +10,8 @@ rectangle AutomaticWateringSystem {
     (BatteryLow) as BL
     (CheckEnvironment) as CE
     (WateringMode) as WP
+    (PowerCharging) as PC
+    (WaterRefill) as WR
 }
 
 :User: as U
@@ -20,19 +22,29 @@ rectangle AutomaticWateringSystem {
 :HumiditySensor: as HS
 :IrrigationSystem: as IS
 
-U -- W
-W -- IS
-U -- CWL
-CWL --> WL
-WL -- LW
-U -- CBL
-CBL --> BL
-BL -- LB
-TS -- CE
-LS -- CE
-HS -- CE
-CE -- W
+U - W
 U -- WP
-W --> WP : <<include>>
+U -- PC
+U -- WR
+
+U -- CBL
+U -- CWL
+
+W -LEFT- IS
+W -> WP : <<include>>
+W -- CE
+
+W -- WL
+W -- BL
+
+CWL -- WL
+CBL -- BL
+
+WL -- LW
+BL -- LB
+
+TS -up- CE
+LS -up- CE
+HS -up- CE
 
 @enduml

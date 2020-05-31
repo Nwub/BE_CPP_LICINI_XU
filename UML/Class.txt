@@ -36,22 +36,19 @@ class WaterLevelSensor{
 
 class Actuator{
   -int delay
-  +Actuator()
+  +Actuator(int d)
   +virtual void run()
 }
 class DigitalActuatorRGLED{
   -boolean state
-  -int color
   +int *lum
-  +DigitalActuatorLED()
+  +DigitalActuatorLED(int d, int *l)
   +virtual void run()
-  +void colorChange(int c)
 }
-
-
 class IrrigationSystem{
   -int w_time
-  +IrrigationSystem(int d)
+  +int *hum
+  +IrrigationSystem(int d, int *h)
   +virtual void run()
 }
 
@@ -60,9 +57,8 @@ class WateringModeSelector{
   -W_mode mod
   +WateringModeSelector()
   +virtual void run()
-  +void setMode(W_mode m)
-  +int getMode()
 }
+note left : enum W_mode {OFF,ON,SUMMER,WINTER,PERIOD}
 
 Sensor -UP-|> Device
 Actuator -UP-|> Device
@@ -70,7 +66,7 @@ AnalogAmbiantSensor -UP-|> Sensor
 BatteryLevelSensor -UP-|> Sensor
 WaterLevelSensor -UP-|> Sensor
 DigitalActuatorRGLED -UP-|> Actuator
-IrrigationSystem -UP-|> Device
+IrrigationSystem -UP-|> Actuator
 WateringModeSelector -UP-|> Device
 
 

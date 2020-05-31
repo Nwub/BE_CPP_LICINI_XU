@@ -2,23 +2,31 @@
 
 title Sequence Diagram
 
-control "Arduino Board" as AB
-control "BatteryLevel Sensor" as BS
-boundary "BatteryLevel LED" as BL
-control "WaterLevel Sensor" as WS
-boundary "WaterLevel LED" as WL
 actor User
+control "Arduino Board" as AB
+control "Environment Sensors" as ES
+control "BatteryLevel Sensor" as BS
+control "WaterLevel Sensor" as WS
+boundary "BatteryLevel LED" as BL
+boundary "WaterLevel LED" as WL
 boundary "Watering Mode" as WM
 entity "Irrigation System" as IS
-control "Environment Sensors" as ES
+
+activate AB
 
 User -> WM : setWateringMode()
 
-activate AB
+AB -> ES ++ : getEnvironmentVar()
+ES -> ES : environmentCheck()
+return EnvironmentVar
 
 AB -> BS ++ : getBatteryLevel()
 BS -> BS : batteryLevelCheck()
 return BatteryLevel
+
+AB -> WS ++ : getWaterLevel()
+WS -> WS : waterLevelCheck()
+return WaterLevel
 
 alt Battery Level LOW
 AB -> BL ++ : set(ON)
@@ -27,10 +35,6 @@ else Battery Level OK
 deactivate BL
 end
 
-AB -> WS ++ : getWaterLevel()
-WS -> WS : waterLevelCheck()
-return WaterLevel
-
 alt Water Level LOW
 AB -> WL ++ : set(ON)
 WL --> WL : state=ON
@@ -38,9 +42,6 @@ else Water Level OK
 deactivate WL
 end
 
-AB -> ES ++ : getEnvironmentVar()
-ES -> ES : environmentCheck()
-return EnvironmentVar
 AB -> WM : getMode()
 AB <-- WM : Mode
 
