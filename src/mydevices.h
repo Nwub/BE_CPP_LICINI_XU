@@ -8,7 +8,8 @@
 #include "core_simulation.h"
 #include <fstream>
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // exemple d'actionneur sur le bus I2C permettant d'echanger des tableaux de caracteres : un ecran, ne pas oublier d'heriter de Device
 class I2CActuatorScreen : public Device{
 protected:
@@ -21,32 +22,21 @@ public:
   // thread representant le capteur et permettant de fonctionner independamment de la board
   virtual void run();
 };
-//~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //objet type : capteur de base
 class Sensor: public Device{
-  protected:
+protected:
   //incertitudes
   int alea;
   //période d'échantillonnage
   int temps;
 
-  public:
+public:
   //constructeur
   Sensor(int d);
-  //thread
-  virtual void run();
-};
-
-//objet type : actionneur de base
-class Actuator: public Device{
-  protected:
-  //état
-  int state;
-
-  public:
-  //constructeur
-  Actuator();
   //thread
   virtual void run();
 };
@@ -63,6 +53,73 @@ public:
   virtual void run();
 };
 
+//capteur de luminosité
+class AnalogSensorLuminosity : public Sensor{
+private:
+  //valeur mesurée
+  int val;
+
+public:
+  //constructeur
+  AnalogSensorLuminosity(int t);
+  // thread representant le capteur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+//capteur de luminosité
+class AnalogSensorPressure : public Sensor{
+private:
+  //valeur mesurée
+  int val;
+
+public:
+  //constructeur
+  AnalogSensorPressure(int t);
+  // thread representant le capteur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+//capteur de luminosité
+class AnalogSensorHumidity : public Sensor{
+private:
+  //valeur mesurée
+  int val;
+
+public:
+  //constructeur
+  AnalogSensorHumidity(int t);
+  // thread representant le capteur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+//bouton externe
+class ExternalDigitalSensorButton : public Sensor{
+private:
+  //état bouton
+  boolean state;
+public:
+  //constructeur
+  ExternalDigitalSensorButton(int t);
+  //thread
+  virtual void run();
+};
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//objet type : actionneur de base
+class Actuator: public Device{
+protected:
+  //état
+  boolean state;
+
+public:
+  //constructeur
+  Actuator();
+  //thread
+  virtual void run();
+};
+
 //actionneur digital : une led
 class DigitalActuatorLED: public Actuator {
 private:
@@ -74,43 +131,16 @@ public:
   // thread representant l'actionneur et permettant de fonctionner independamment de la board
   virtual void run();
 };
-
-//capteur de luminosité
-class AnalogSensorLuminosity : public Sensor{
-  private:
-  //valeur mesurée
-  int val;
-
-  public:
-  //constructeur
-  AnalogSensorLuminosity(int t);
-  // thread representant le capteur et permettant de fonctionner independamment de la board
-  virtual void run();
-};
-
 //smart-LED
 class IntelligentDigitalActuatorLED : public Actuator{
-  private:
+private:
   //état LED
   boolean state;
-  public:
+public:
   //constructeur
   IntelligentDigitalActuatorLED();
   //thread
   virtual void run();
 };
-
-//bouton externe
-class ExternalDigitalSensorButton : public Sensor{
-  private:
-  //état bouton
-  boolean state;
-  public:
-  //constructeur
-  ExternalDigitalSensorButton(int t);
-  //thread
-  virtual void run();
-};
-
 
 #endif

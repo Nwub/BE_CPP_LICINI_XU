@@ -1,0 +1,69 @@
+@startuml
+
+title Sequence Diagram
+
+control "BatteryLevel Sensor" as BS
+boundary "BatteryLevel LED" as BL
+control "WaterLevel Sensor" as WS
+boundary "WaterLevel LED" as WL
+actor User
+entity "Watering Mode" as WM
+entity "Irrigation System" as IS
+control "Environment Sensors" as ES
+
+User -> WM : setWateringMode()
+
+activate BS
+activate WS
+activate ES
+
+note over ES
+integer Temp
+integer Pa
+integer Lum
+integer Hum
+end note
+
+BS -> BS : batteryLevelCheck()
+
+alt Battery Level LOW
+BS -> BL : set(ON)
+activate BL
+BL --> BL : state=ON
+else Battery Level OK
+deactivate BL
+end
+
+WS -> WS : waterLevelCheck()
+
+alt Water Level LOW
+WS -> WL : set(ON)
+activate WL
+WL --> WL : state=ON
+else Water Level OK
+deactivate WL
+end
+
+ES -> ES : environmentCheck()
+ES -> WM : environmentVar(Temp,Pa,Lum,Hum)
+activate WM
+
+alt Watering Condition OK
+WM -> IS : set(ON)
+activate IS
+IS -> IS : watering()
+IS -> WM : done()
+deactivate IS
+deactivate WM
+else Watering Condition Not-OK
+deactivate WM
+end
+
+alt User Manual Input
+User -> IS : set(ON)
+activate IS
+IS -> IS : watering()
+deactivate IS
+end
+
+@enduml

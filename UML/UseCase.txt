@@ -1,0 +1,40 @@
+@startuml
+
+title Use Case Diagram
+
+rectangle AutomaticWateringSystem {
+    (Watering) as W
+    (CheckWaterLevel) as CWL
+    (WaterLow) as WL
+    (CheckBatteryLevel) AS CBL
+    (BatteryLow) as BL
+    (CheckEnvironment) as CE
+    (WateringMode) as WP
+}
+
+:User: as U
+:LED_WaterLevel: as LW
+:LED_BatteryLevel: as LB
+:TemperatureSensor: as TS
+:LightSensor: as LS
+:PressureSensor: as PS
+:HumiditySensor: as HS
+:IrrigationSystem: as IS
+
+U -- W
+W -- IS
+U -- CWL
+CWL --> WL
+WL -- LW
+U -- CBL
+CBL --> BL
+BL -- LB
+TS -- CE
+LS -- CE
+PS -- CE
+HS -- CE
+CE -- W
+U -- WP
+W --> WP : <<include>>
+
+@enduml
