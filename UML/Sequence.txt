@@ -52,10 +52,4 @@ deactivate IS
 else Watering Condition Not-OK
 end
 
-alt User Manual Input
-User -> IS ++ : set(ON)
-IS -> IS : watering()
-deactivate IS
-end
-
 @enduml
