@@ -3,12 +3,11 @@
 
 using namespace std;
 
-int luminosite_environnement = 200; //LUX
-int temperature_environnement = 25; //°C
-float pression_environnement = 1.013; //bar
-int humidite_environemment = 40; //%
+int BatteryLevel = 99;
+int WaterLevel = 99;
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // classe I2CActuatorScreen
 I2CActuatorScreen::I2CActuatorScreen ():Device(){
 }
@@ -22,11 +21,13 @@ void I2CActuatorScreen::run(){
     sleep(1);
     }
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //constructeur des classes Sensor
 Sensor::Sensor(int d):Device(){
-  temps = d;
+  s_time = d;
   alea = 1;
 }
 void Sensor::run(){
@@ -35,10 +36,9 @@ void Sensor::run(){
     sleep(DELAY);
   }
 }
-
 //constructeur des classes Actuator
-Actuator::Actuator():Device(){
-  state = LOW;
+Actuator::Actuator(int d):Device(){
+  delay = d;
 }
 void Actuator::run(){
   while(1){
@@ -47,83 +47,150 @@ void Actuator::run(){
   }
 }
 
-//capteur de température ambiant
-AnalogSensorTemperature::AnalogSensorTemperature(int d):Sensor(d){
-  val=temperature_environnement;
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//capteur d'une grandeur ambiante
+AnalogAmbiantSensor::AnalogAmbiantSensor(int d, int *v):Sensor(d){
+  val=v;
 }
-void AnalogSensorTemperature::run(){
+void AnalogAmbiantSensor::run(){
   while(1){
     alea=1-alea;
     if(ptrmem!=NULL)
-      *ptrmem=val+alea;
-    sleep(temps);
+      *ptrmem=*val+alea;
+    sleep(s_time);
   }
 }
 
+//capteur du niveau de batterie du système
+BatteryLevelSensor::BatteryLevelSensor(int d):Sensor(d){
+  val=BatteryLevel;
+}
+void BatteryLevelSensor::run(){
+  while(1){
+    val=BatteryLevel;
+    alea=1-alea;
+    if(ptrmem!=NULL)    
+      *ptrmem=val+alea;
+    sleep(s_time);
+  }
+}
+
+//capteur du niveau d'eau du système
+WaterLevelSensor::WaterLevelSensor(int d):Sensor(d){
+  val=WaterLevel;
+}
+void WaterLevelSensor::run(){
+  while(1){
+    val=WaterLevel;
+    alea=1-alea;
+    if(ptrmem!=NULL)    
+      *ptrmem=val+alea;
+    sleep(s_time);
+  }
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //classe LED
-DigitalActuatorLED::DigitalActuatorLED():Actuator(){
+DigitalActuatorRGLED::DigitalActuatorRGLED(int d, int *l):Actuator(d){
+  state = LOW;
+  //la led joue sur la luminosité environnante
+  lum = l;
 }
-void DigitalActuatorLED::run(){
-  while(1){
-    if(ptrmem!=NULL)
-      state=*ptrmem;
-    if (state==LOW)
-      cout << "((((eteint))))\n";
-    else
-    cout << "((((allume))))\n";
-    sleep(DELAY);
-    }
-}
-
-//capteur de luminosité ambiante
-AnalogSensorLuminosity::AnalogSensorLuminosity(int d):Sensor(d){
-  val = luminosite_environnement;
-}
-void AnalogSensorLuminosity::run(){
-  while(1){
-    val = luminosite_environnement;
-    alea=1-alea;
-    if(ptrmem!=NULL)
-      *ptrmem=val+alea;
-    sleep(temps);
-  }
-}
-
-//LED
-IntelligentDigitalActuatorLED::IntelligentDigitalActuatorLED():Actuator(){
-}
-void IntelligentDigitalActuatorLED::run(){
+void DigitalActuatorRGLED::run(){
   int old_state = state;
   while(1){
-    if(ptrmem!=NULL)
+    if(ptrmem!=NULL){
       state=*ptrmem;
-    if(state==HIGH && old_state==LOW){
-      luminosite_environnement = luminosite_environnement + 50;
-      old_state=state;
-      cout << "[ON]" << endl << flush;
-    }else if(state== LOW && old_state==HIGH){
-      luminosite_environnement = luminosite_environnement - 50;
-      old_state=state;
-      cout << "[OFF]" << endl << flush;
-    }else{
-      old_state=state;
+      if (state==LOW){
+        cout << "# LED : [RED] #\n";
+        if(old_state==HIGH){  //modif env
+          if(*lum>20) *lum -= 20; //pas de luminosité négative
+          old_state = LOW;
+        }
+      }else{
+        cout << "# LED : [GREEN] #\n";
+        if(old_state==LOW){   //modif env
+          *lum += 30;
+          old_state = HIGH;
+        }
+      }
     }
-    sleep(DELAY);
+    sleep(delay);
   }
 }
 
-//bouton externe
-ExternalDigitalSensorButton::ExternalDigitalSensorButton(int t):Sensor(t){
+//système d'arrosage
+IrrigationSystem::IrrigationSystem(int d, int *h):Actuator(d){
+  w_time = 0;
+  //l'arrosage joue sur l'humidité
+  hum = h;
 }
-void ExternalDigitalSensorButton::run(){
+void IrrigationSystem::run(){
   while(1){
-    if(ifstream("on.txt")){
-      state = HIGH;
-    }else{
-      state = LOW;
+    sleep(delay);
+    if(ptrmem!=NULL){
+      w_time=*ptrmem;
+      if(w_time>0){
+        if(BatteryLevel<11){  //pas d'anti-énergie
+          cout << "!!! LOW on Battery !!!" << endl;
+        }else{
+          if(WaterLevel>w_time){  //pas d'anti-eau
+            BatteryLevel -= 10;   //consommation : 10Power/use
+            WaterLevel -= w_time; //consommation : 1Water/time
+            *hum += w_time/2;
+            cout << "# Watering : ON #" << endl;
+          }else{
+            cout << "!!! LOW on Water !!!" << endl;
+          }
+        }
+      }
     }
-    if(ptrmem!=NULL)
-    *ptrmem=state;
-    sleep(5);
+  }
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//Sélecteur du mode d'arrosage
+UserSystemControl::UserSystemControl():Device(){
+  mod = OFF;
+}
+void UserSystemControl::run(){
+  while(1){
+    if(ptrmem!=NULL){
+      //check si recharge de batterie ou d'eau
+      if(ifstream("power.txt")){
+        BatteryLevel = 99;
+        cout << "-> Power Charged !" << endl;
+      }
+      if(ifstream("water.txt")){
+        BatteryLevel = 99;
+        cout << "-> Water Refilled !" << endl;
+      }
+      //on récupère le mode (pas plusieurs modes simultanés)
+      if(ifstream("on.txt")){
+        mod = ON;
+        cout << "________setMode ON\n";
+      }else if(ifstream("winter.txt")){
+        mod = WINTER;
+        cout << "________setMode WINTER\n";
+      }else if(ifstream("summer.txt")){
+        mod = SUMMER;
+        cout << "________setMode SUMMER\n";
+      }else if(ifstream("period.txt")){
+        mod = PERIOD;
+        cout << "________setMode PERIOD\n";
+      }else{  //mode par défaut
+        cout << "________setMode OFF" << endl;
+        mod = OFF;
+      }
+      *ptrmem=(int)mod;
+      sleep(DELAY);
+    }
   }
 }

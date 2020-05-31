@@ -17,7 +17,6 @@ rectangle AutomaticWateringSystem {
 :LED_BatteryLevel: as LB
 :TemperatureSensor: as TS
 :LightSensor: as LS
-:PressureSensor: as PS
 :HumiditySensor: as HS
 :IrrigationSystem: as IS
 
@@ -31,7 +30,6 @@ CBL --> BL
 BL -- LB
 TS -- CE
 LS -- CE
-PS -- CE
 HS -- CE
 CE -- W
 U -- WP

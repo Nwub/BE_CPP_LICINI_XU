@@ -32,8 +32,7 @@ protected:
   //incertitudes
   int alea;
   //période d'échantillonnage
-  int temps;
-
+  int s_time;
 public:
   //constructeur
   Sensor(int d);
@@ -41,104 +40,97 @@ public:
   virtual void run();
 };
 
-//capteur analogique de temperature
-class AnalogSensorTemperature: public Sensor {  
+//capteur ambiant de type analogique
+class AnalogAmbiantSensor: public Sensor {  
+private:
+  //valeur mesurée
+  int *val;
+public:
+  //constructeur
+  AnalogAmbiantSensor(int t, int *v);
+  // thread representant le capteur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+
+//capteur du niveau de batterie du système
+class BatteryLevelSensor : public Sensor{
 private:
   //valeur mesurée
   int val;
 public:
   //constructeur
-  AnalogSensorTemperature(int t);
+  BatteryLevelSensor(int t);
   // thread representant le capteur et permettant de fonctionner independamment de la board
   virtual void run();
 };
 
-//capteur de luminosité
-class AnalogSensorLuminosity : public Sensor{
+//capteur du niveau d'eau du système
+class WaterLevelSensor : public Sensor{
 private:
   //valeur mesurée
   int val;
-
 public:
   //constructeur
-  AnalogSensorLuminosity(int t);
+  WaterLevelSensor(int t);
   // thread representant le capteur et permettant de fonctionner independamment de la board
   virtual void run();
 };
-
-//capteur de luminosité
-class AnalogSensorPressure : public Sensor{
-private:
-  //valeur mesurée
-  int val;
-
-public:
-  //constructeur
-  AnalogSensorPressure(int t);
-  // thread representant le capteur et permettant de fonctionner independamment de la board
-  virtual void run();
-};
-
-//capteur de luminosité
-class AnalogSensorHumidity : public Sensor{
-private:
-  //valeur mesurée
-  int val;
-
-public:
-  //constructeur
-  AnalogSensorHumidity(int t);
-  // thread representant le capteur et permettant de fonctionner independamment de la board
-  virtual void run();
-};
-
-//bouton externe
-class ExternalDigitalSensorButton : public Sensor{
-private:
-  //état bouton
-  boolean state;
-public:
-  //constructeur
-  ExternalDigitalSensorButton(int t);
-  //thread
-  virtual void run();
-};
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //objet type : actionneur de base
 class Actuator: public Device{
 protected:
-  //état
-  boolean state;
-
+  //délai
+  int delay;
 public:
   //constructeur
-  Actuator();
+  Actuator(int d);
   //thread
   virtual void run();
 };
 
 //actionneur digital : une led
-class DigitalActuatorLED: public Actuator {
+class DigitalActuatorRGLED: public Actuator {
 private:
-  //état LED
+  //état de la led : rouge ou verte en fonction de la batterie
   boolean state;
 public:
+  //modification externe
+  int *lum;
   //constructeur
-  DigitalActuatorLED();
+  DigitalActuatorRGLED(int d, int *l);
   // thread representant l'actionneur et permettant de fonctionner independamment de la board
   virtual void run();
 };
-//smart-LED
-class IntelligentDigitalActuatorLED : public Actuator{
+
+//système d'arrosage
+class IrrigationSystem: public Actuator {
 private:
-  //état LED
-  boolean state;
+  //temps d'arrosage
+  int w_time;
+public:
+  //modification externe
+  int *hum;
+  //constructeur
+  IrrigationSystem(int d, int *h);
+  // thread representant l'actionneur et permettant de fonctionner independamment de la board
+  virtual void run();
+};
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+enum W_mode {OFF,ON,WINTER,SUMMER,PERIOD};
+
+//module de contrôle du mode d'arrosage
+class UserSystemControl : public Device{
+private:
+  //mode d'arrosage choisi
+  W_mode mod;
 public:
   //constructeur
-  IntelligentDigitalActuatorLED();
+  UserSystemControl();
   //thread
   virtual void run();
 };

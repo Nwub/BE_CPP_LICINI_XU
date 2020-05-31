@@ -1,0 +1,77 @@
+@startuml
+
+title Types - Class Diagram
+
+class Device {
+  #unsigned short *ptrmem
+  #enum typeio *ptrtype
+  + Device()
+  + virtual void run()
+  + void setPinMem(unsigned short* ptr,enum typeio *c)
+}
+
+
+class Sensor{
+  #int alea
+  #int s_time
+  +Sensor(int d)
+  +virtual void run()
+}
+class AnalogAmbiantSensor{
+  -int *val
+  +AnalogAmbiantSensor(int t, int *v)
+  +virtual void run()
+}
+class BatteryLevelSensor{
+  -int val
+  +BatteryLevelSensor(int t)
+  +virtual void run()
+}
+class WaterLevelSensor{
+  -int val
+  +BatteryLevelSensor(int t)
+  +virtual void run()
+}
+
+
+class Actuator{
+  -int delay
+  +Actuator()
+  +virtual void run()
+}
+class DigitalActuatorRGLED{
+  -boolean state
+  -int color
+  +int *lum
+  +DigitalActuatorLED()
+  +virtual void run()
+  +void colorChange(int c)
+}
+
+
+class IrrigationSystem{
+  -int w_time
+  +IrrigationSystem(int d)
+  +virtual void run()
+}
+
+
+class WateringModeSelector{
+  -W_mode mod
+  +WateringModeSelector()
+  +virtual void run()
+  +void setMode(W_mode m)
+  +int getMode()
+}
+
+Sensor -UP-|> Device
+Actuator -UP-|> Device
+AnalogAmbiantSensor -UP-|> Sensor
+BatteryLevelSensor -UP-|> Sensor
+WaterLevelSensor -UP-|> Sensor
+DigitalActuatorRGLED -UP-|> Actuator
+IrrigationSystem -UP-|> Device
+WateringModeSelector -UP-|> Device
+
+
+@enduml
