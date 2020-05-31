@@ -106,13 +106,13 @@ void DigitalActuatorRGLED::run(){
     if(ptrmem!=NULL){
       state=*ptrmem;
       if (state==LOW){
-        cout << "# LED : [RED] #\n";
+        cout << "# LED : [OFF] #\n";
         if(old_state==HIGH){  //modif env
           if(*lum>20) *lum -= 20; //pas de luminosité négative
           old_state = LOW;
         }
       }else{
-        cout << "# LED : [GREEN] #\n";
+        cout << "# LED : [ON] #\n";
         if(old_state==LOW){   //modif env
           *lum += 30;
           old_state = HIGH;

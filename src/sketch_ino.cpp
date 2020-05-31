@@ -55,15 +55,15 @@ void Board::loop(){
 
   // Led du niveau de batterie rouge si batterie faible 
   if(val_b<20){
-    digitalWrite(4,LOW);
-  }else{
     digitalWrite(4,HIGH);
+  }else{
+    digitalWrite(4,LOW);
   }
   // Led du niveau d'eau rouge si niveau faible
   if(val_w<20){ 
-    digitalWrite(5,LOW);
-  }else{
     digitalWrite(5,HIGH);
+  }else{
+    digitalWrite(5,LOW);
   }
 
   sleep(1);
